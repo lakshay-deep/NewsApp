@@ -14,7 +14,7 @@
         android:theme="@style/Theme.NewsApp"
         tools:targetApi="31">
         <activity
-            android:name="com.example.newz.MainActivity"
+            android:name="com.example.newz.presentation.mainactivity.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/App.Starting.Theme">
