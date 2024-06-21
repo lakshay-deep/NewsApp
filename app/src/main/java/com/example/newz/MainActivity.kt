@@ -9,7 +9,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.newz.presentation.onboarding.OnBoardingScreen
+import com.example.newz.presentation.onboarding.OnBoardingViewModel
 import com.example.newz.ui.theme.NewsAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -24,7 +26,8 @@ class MainActivity : ComponentActivity() {
                 dynamicColor = false
             ) {
                 Box(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
-                    OnBoardingScreen()
+                    val viewModel: OnBoardingViewModel = hiltViewModel()
+                    OnBoardingScreen(onEvent = viewModel::onEvent)
                 }
             }
         }
