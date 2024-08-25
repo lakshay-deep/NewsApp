@@ -1,11 +1,10 @@
 package com.example.newz.presentation.mainactivity
 
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.newz.domain.usecases.appEntry.AppEntryUseCases
+import com.example.newz.domain.usecases.appEntry.ReadAppEntry
 import com.example.newz.presentation.navgraph.Route
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -15,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val appEntryUseCases: AppEntryUseCases
+    private val readAppEntry: ReadAppEntry
 ): ViewModel(){
 
     private val _splashCondition = mutableStateOf(true)
@@ -26,7 +25,7 @@ class MainViewModel @Inject constructor(
 
 
     init {
-        appEntryUseCases.readAppEntry().onEach { shouldStartFromHomeScreen ->
+        readAppEntry().onEach { shouldStartFromHomeScreen ->
             if (shouldStartFromHomeScreen){
                 _startDestination.value= Route.NewsNavigation.route
             } else {

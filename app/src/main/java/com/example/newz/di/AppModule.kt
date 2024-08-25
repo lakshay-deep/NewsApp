@@ -1,15 +1,18 @@
 package com.example.newz.di
 
 import android.app.Application
-import com.example.newz.data.manager.LocalUserManagerImpl
-import com.example.newz.domain.manager.LocalUserManager
-import com.example.newz.domain.usecases.appEntry.AppEntryUseCases
-import com.example.newz.domain.usecases.appEntry.ReadAppEntry
-import com.example.newz.domain.usecases.appEntry.SaveAppEntry
+import androidx.room.Room
+import com.example.newz.data.local.NewsDao
+import com.example.newz.data.local.NewsDatabase
+import com.example.newz.data.local.NewsTypeConvertor
+import com.example.newz.data.remote.NewsApi
+import com.example.newz.util.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -18,16 +21,34 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideLocalUserManager(
-        application: Application
-    ): LocalUserManager = LocalUserManagerImpl(context = application)
+    fun provideApiInstance(): NewsApi {
+        return Retrofit
+            .Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(NewsApi::class.java)
+    }
 
     @Provides
     @Singleton
-    fun provideAppEntryUseCase(
-        localUserManager: LocalUserManager
-    ): AppEntryUseCases = AppEntryUseCases(
-        readAppEntry = ReadAppEntry(localUserManager),
-        saveAppEntry = SaveAppEntry(localUserManager)
-    )
+    fun provideNewsDatabase(
+        application: Application
+    ): NewsDatabase {
+        return Room.databaseBuilder(
+            context = application,
+            klass = NewsDatabase::class.java,
+            name = "news_db"
+        ).addTypeConverter(NewsTypeConvertor())
+            .fallbackToDestructiveMigration()
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideNewsDao(
+        newsDatabase: NewsDatabase
+    ): NewsDao = newsDatabase.newsDao
+
+
 }
